@@ -18,6 +18,11 @@ namespace Sample.Visual
         private bool _isSelected = false;
         private bool _isLocked = false;
 
+        private void Awake()
+        {
+            UpdateSelectedColor();
+        }
+
         public void SetIsSelected(bool isSelected)
         {
             _isSelected = isSelected;

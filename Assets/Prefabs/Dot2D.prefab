@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0, g: 0.5089133, b: 1, a: 1}
+  m_Color: {r: 0.43137255, g: 0.078431375, b: 0.9607843, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -99,10 +99,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 3632923207458238589}
-  defaultSelectedColor: {r: 0, g: 1, b: 0.3122611, a: 1}
-  lockedSelectedColor: {r: 1, g: 0, b: 0.85660934, a: 1}
-  lockedColor: {r: 1, g: 0, b: 0.19144297, a: 1}
-  defaultColor: {r: 0, g: 0.50980395, b: 1, a: 1}
+  defaultSelectedColor: {r: 0.49411765, g: 0.8392157, b: 0.8745098, a: 1}
+  lockedSelectedColor: {r: 0.9411765, g: 0.5764706, b: 0.16862746, a: 1}
+  lockedColor: {r: 0.92156863, g: 0.3019608, b: 0.29411766, a: 1}
+  defaultColor: {r: 0.40784314, g: 0.42745098, b: 0.8784314, a: 1}
 --- !u!58 &5747486980781407599
 CircleCollider2D:
   m_ObjectHideFlags: 0
