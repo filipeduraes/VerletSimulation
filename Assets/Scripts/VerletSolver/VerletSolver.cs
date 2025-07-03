@@ -10,11 +10,11 @@ namespace Sample.Solver
     {
         public List<Dot> Dots { get; } = new();
 
-        private readonly int _iterations;
+        public int Iterations { get; set; }
 
         public VerletSolver(int iterations)
         {
-            _iterations = iterations;
+            Iterations = iterations;
         }
 
         public void AddForceToAllDots(Vector3 force)
@@ -58,7 +58,7 @@ namespace Sample.Solver
         
         private void ConstraintLength()
         {
-            for (int i = 0; i < _iterations; i++)
+            for (int i = 0; i < Iterations; i++)
             {
                 foreach (Dot dotA in Dots.ToList())
                 {
@@ -69,7 +69,7 @@ namespace Sample.Solver
                     
                     foreach (Connection connection in dotA.Connections.ToList())
                     {
-                        Dot dotB = connection.Other(dotA);
+                        Dot dotB = connection?.Other(dotA);
 
                         if (dotB == null)
                         {

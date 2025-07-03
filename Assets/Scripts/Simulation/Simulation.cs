@@ -31,6 +31,14 @@ namespace Sample.Visual
         private readonly Dictionary<Connection, LineRenderer> _connectionVisuals = new();
         private bool _simulationIsRunning = true;
 
+        private void OnValidate()
+        {
+            if (_solver != null)
+            {
+                _solver.Iterations = iterationCount;
+            }
+        }
+
         private void Start()
         {
             Dot[,] dotGrid = new Dot[width, height];
@@ -43,15 +51,10 @@ namespace Sample.Visual
             {
                 for (int x = 0; x < width; x++)
                 {
-                    Dot newDot = new(transform.position + new Vector3(x, -y));
-                    VisualDot newDotVisual = Instantiate(dotVisual, newDot.CurrentPosition, Quaternion.identity, _dotsContainer);
-                    newDotVisual.OnLockRequested += ToggleDotLock;
+                    Vector3 dotPosition = transform.position + new Vector3(x, -y);
+                    Dot newDot = CreateDot(dotPosition);
 
-                    _dotToVisual[newDot] = newDotVisual;
-                    _visualToDot[newDotVisual] = newDot;
-                    
                     dotGrid[x, y] = newDot;
-                    _solver.Dots.Add(newDot);
                 }
             }
 
@@ -76,11 +79,7 @@ namespace Sample.Visual
                         if (IndexIsValid(neighbourIndex))
                         {
                             Dot neighbourDot = dotGrid[neighbourIndex.x, neighbourIndex.y];
-                            Connection connection = Dot.Connect(currentDot, neighbourDot);
-
-                            LineRenderer newConnectionVisual = Instantiate(connectionVisual, _connectionsContainer);
-                            newConnectionVisual.positionCount = 2;
-                            _connectionVisuals[connection] = newConnectionVisual;
+                            CreateConnection(currentDot, neighbourDot);
                         }
                     }
                 }
@@ -103,7 +102,7 @@ namespace Sample.Visual
             }).Forget();
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             if (!_simulationIsRunning)
             {
@@ -156,6 +155,44 @@ namespace Sample.Visual
                     return;
                 }
             }
+        }
+        
+        public void CreateConnection(VisualDot firstDotVisual, VisualDot secondDotVisual)
+        {
+            Dot firstDot = _visualToDot[firstDotVisual];
+            Dot secondDot = _visualToDot[secondDotVisual];
+            CreateConnection(firstDot, secondDot);
+        }
+        
+        public VisualDot CreateAndConnectDot(Vector3 dotPosition, VisualDot connectedDot)
+        {
+            Dot dot = CreateDot(dotPosition);
+            CreateConnection(dot, _visualToDot[connectedDot]);
+            return _dotToVisual[dot];
+        }
+
+        private void CreateConnection(Dot firstDot, Dot secondDot)
+        {
+            Connection connection = Dot.Connect(firstDot, secondDot);
+
+            LineRenderer newConnectionVisual = Instantiate(connectionVisual, _connectionsContainer);
+            newConnectionVisual.positionCount = 2;
+            newConnectionVisual.SetPosition(0, firstDot.CurrentPosition);
+            newConnectionVisual.SetPosition(1, secondDot.CurrentPosition);
+            _connectionVisuals[connection] = newConnectionVisual;
+        }
+        
+        private Dot CreateDot(Vector3 dotPosition)
+        {
+            Dot newDot = new(dotPosition);
+            VisualDot newDotVisual = Instantiate(dotVisual, newDot.CurrentPosition, Quaternion.identity, _dotsContainer);
+            newDotVisual.OnLockRequested += ToggleDotLock;
+
+            _dotToVisual[newDot] = newDotVisual;
+            _visualToDot[newDotVisual] = newDot;
+                    
+            _solver.Dots.Add(newDot);
+            return newDot;
         }
 
         private void BreakConnection(Connection connection)

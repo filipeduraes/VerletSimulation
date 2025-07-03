@@ -50,11 +50,7 @@ namespace Sample.Visual
         private void ToggleSimulation(InputAction.CallbackContext context)
         {
             simulation.ToggleSimulationRunning();
-
-            if (simulation.IsRunning() && selectedDot != null)
-            {
-                selectedDot.SetIsSelected(false);
-            }
+            DeselectCurrentDot();
         }
         
         private void SelectDot(InputAction.CallbackContext context)
@@ -63,17 +59,28 @@ namespace Sample.Visual
             {
                 return;
             }
-
-            if (selectedDot != null)
-            {
-                selectedDot.SetIsSelected(false);
-                selectedDot = null;
-            }
             
             if (GetDotInMousePosition(out VisualDot visualDot))
             {
-                selectedDot = visualDot;
-                selectedDot.SetIsSelected(true);
+                if (visualDot == selectedDot)
+                {
+                    DeselectCurrentDot();
+                }
+                else if(selectedDot != null)
+                {
+                    simulation.CreateConnection(visualDot, selectedDot);
+                    DeselectCurrentDot();
+                }
+                else
+                {
+                    SelectDot(visualDot);
+                }
+            }
+            else if (selectedDot != null)
+            {
+                VisualDot createdDot = simulation.CreateAndConnectDot(GetWorldMousePosition(), selectedDot);
+                DeselectCurrentDot();
+                SelectDot(createdDot);
             }
         }
         
@@ -106,6 +113,21 @@ namespace Sample.Visual
             Vector3 worldMousePosition = mainCamera.ScreenToWorldPoint(mousePosition);
             worldMousePosition.z = 0.0f;
             return worldMousePosition;
+        }
+
+        private void SelectDot(VisualDot dot)
+        {
+            dot.SetIsSelected(true);
+            selectedDot = dot;
+        }
+
+        private void DeselectCurrentDot()
+        {
+            if (selectedDot != null)
+            {
+                selectedDot.SetIsSelected(false);
+                selectedDot = null;
+            }
         }
     }
 }
