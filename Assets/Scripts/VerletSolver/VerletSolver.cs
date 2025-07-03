@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -23,15 +24,21 @@ namespace Sample.Solver
         
         public async UniTask SolveAsync(float deltaTime)
         {
-            await UniTask.RunOnThreadPool(() => ApplyPhysicsToDots(deltaTime));
-            await UniTask.RunOnThreadPool(ConstraintLength);
+            await UniTask.RunOnThreadPool
+            (
+                () =>
+                {
+                    ApplyPhysicsToDots(deltaTime);
+                    ConstraintLength();
+                }
+            );
         }
 
         private void ApplyPhysicsToDots(float deltaTime)
         {
             float squaredDeltaTime = deltaTime * deltaTime;
             
-            foreach (Dot dot in Dots)
+            foreach (Dot dot in Dots.ToList())
             {
                 if (dot.IsLocked)
                 {
@@ -53,11 +60,22 @@ namespace Sample.Solver
         {
             for (int i = 0; i < _iterations; i++)
             {
-                foreach (Dot dotA in Dots)
+                foreach (Dot dotA in Dots.ToList())
                 {
-                    foreach (Connection connection in dotA.Connections)
+                    if (dotA == null)
+                    {
+                        continue;
+                    }
+                    
+                    foreach (Connection connection in dotA.Connections.ToList())
                     {
                         Dot dotB = connection.Other(dotA);
+
+                        if (dotB == null)
+                        {
+                            continue;
+                        }
+                        
                         Vector3 center = (dotA.CurrentPosition + dotB.CurrentPosition) / 2f;
                         Vector3 direction = (dotA.CurrentPosition - dotB.CurrentPosition).normalized;
                         Vector3 connectionSize = direction * connection.Length / 2f;
