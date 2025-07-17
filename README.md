@@ -2,6 +2,8 @@
 
 This project implements a real-time physics simulation using Verlet Integration within the Unity Engine. It simulates interconnected particles (dots) constrained by distance relationships (connections), allowing user interaction and dynamic updates.
 
+![Preview](https://github.com/ideatogame/RopeSimulation/blob/main/RopeSimulation_Preview.gif?raw=true)
+
 ## Features
 
 - **Verlet Integration** for stable and efficient particle simulation.
